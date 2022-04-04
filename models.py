@@ -17,7 +17,7 @@ class Cupcake(db.Model):
 
     __tablename__ = "cupcakes"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     flavor = db.Column(db.Text, nullable=False)
     size = db.Column(db.Text, nullable=False)
     rating = db.Column(db.Integer, nullable=False)

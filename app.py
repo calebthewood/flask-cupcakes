@@ -1,5 +1,6 @@
 """Flask app for Cupcakes"""
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
+from itsdangerous import Serializer
 from models import db, connect_db, Cupcake
 
 app = Flask(__name__)
@@ -19,3 +20,31 @@ def get_cupcakes():
     cupcakes = Cupcake.query.all()
     serialized_cupcakes = [cupcake.serialize() for cupcake in cupcakes]
     return jsonify(cupcakes=serialized_cupcakes)
+
+@app.get("/api/cupcakes/<int:cupcake_id>")
+def get_cupcake(cupcake_id):
+    """Returns specific cupcake"""
+
+    cupcake = Cupcake.query.get_or_404(cupcake_id)
+    serialized_cupcake = cupcake.serialize()
+    return jsonify(cupcake=serialized_cupcake)
+
+@app.post("/api/cupcakes")
+def create_cupcake():
+    """Adds cupcake to database"""
+
+    flavor = request.json["flavor"]
+    rating = request.json["rating"]
+    size = request.json["size"]
+    image = request.json["image"] or None
+
+    cupcake = Cupcake(
+        flavor=flavor,
+        rating=rating,
+        size=size,
+        image=image)
+    db.session.add(cupcake)
+    db.session.commit()
+
+    serialized_cupcake = cupcake.serialize()
+    return (jsonify(cupcake=serialized_cupcake), 201)
