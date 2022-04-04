@@ -34,3 +34,5 @@ class Cupcake(db.Model):
             "image": self.image,
         }
 
+
+

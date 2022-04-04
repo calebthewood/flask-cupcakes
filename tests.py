@@ -4,7 +4,7 @@ from app import app
 from models import db, Cupcake
 
 # Use test database and don't clutter tests with SQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://davidjeffers:1234@localhost:5432/cupcakes_test' # added: davidjeffers:1234@localhost:5432
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///cupcakes_test' # added: davidjeffers:1234@localhost:5432
 app.config['SQLALCHEMY_ECHO'] = False
 
 # Make Flask errors be real errors, rather than HTML pages with error info
@@ -22,7 +22,7 @@ CUPCAKE_DATA = {
 
 CUPCAKE_DATA_2 = {
     "flavor": "TestFlavor2",
-    "size": "TestSize2",
+    "size": "TestSize",
     "rating": 10,
     "image": "http://test.com/cupcake2.jpg"
 }
@@ -69,6 +69,7 @@ class CupcakeViewsTestCase(TestCase):
             })
 
     def test_get_cupcake(self):
+        """Tests status code and JSON response data"""
         with app.test_client() as client:
             url = f"/api/cupcakes/{self.cupcake.id}"
             resp = client.get(url)
@@ -86,6 +87,7 @@ class CupcakeViewsTestCase(TestCase):
             })
 
     def test_create_cupcake(self):
+        """Tests status code and JSON response data"""
         with app.test_client() as client:
             url = "/api/cupcakes"
             resp = client.post(url, json=CUPCAKE_DATA_2)
@@ -101,10 +103,57 @@ class CupcakeViewsTestCase(TestCase):
             self.assertEqual(data, {
                 "cupcake": {
                     "flavor": "TestFlavor2",
-                    "size": "TestSize2",
+                    "size": "TestSize",
                     "rating": 10,
                     "image": "http://test.com/cupcake2.jpg"
                 }
             })
 
             self.assertEqual(Cupcake.query.count(), 2)
+
+
+    def test_update_cupcake(self):
+        """Tests status code and JSON response data"""
+        with app.test_client() as client:
+            url = f"/api/cupcakes/{self.cupcake.id}"
+            resp = client.patch(url, json=CUPCAKE_DATA_2)
+
+            self.assertEqual(resp.status_code, 200)
+
+            self.assertEqual(resp.json, {
+                "cupcake": {
+                    "id": self.cupcake.id,
+                    "flavor": "TestFlavor2",
+                    "size": "TestSize",
+                    "rating": 10,
+                    "image": "http://test.com/cupcake2.jpg"
+                }
+            })
+
+    def test_update_cupcake_404(self):
+        with app.test_client() as client:
+            url = "/api/cupcakes/99"
+            resp = client.patch(url, json=CUPCAKE_DATA_2)
+
+            self.assertEqual(resp.status_code, 404)
+
+
+    def test_delete_cupcake(self):
+        """Tests status code and JSON response data"""
+        with app.test_client() as client:
+            url = f"api/cupcakes/{self.cupcake.id}"
+            resp = client.delete(url)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.json, { "deleted": self.cupcake.id })
+
+    def test_delete_cupcake_404(self):
+        with app.test_client() as client:
+            url = "api/cupcakes/99"
+            resp = client.delete(url)
+
+            self.assertEqual(resp.status_code, 404)
+
+
+
+
