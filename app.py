@@ -4,7 +4,7 @@ from models import db, connect_db, Cupcake
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://davidjeffers:1234@localhost:5432/cupcakes" # added: davidjeffers:1234@localhost:5432
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///cupcakes" # added: davidjeffers:1234@localhost:5432
 app.config['SECRET_KEY'] = "secret"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True

@@ -21,16 +21,23 @@ function displayCupcakes(cupcakes) {
 /** Generate HTML for cupcake and append to list */
 function generateHtml(cupcake) {
   $cupcakeList.append(`
-    <div id="c-${cupcake.id}">
-        <img src="${cupcake.image}" width="200">
-        <li>
-            Flavor:${cupcake.flavor} | Size:${cupcake.size} |
-            Rating:${cupcake.rating}
-        </li>
-        <button id="c-${cupcake.id}" class="btn btn-danger">
+    <div id="c-${cupcake.id}" class="row">
+
+      <div class="col-6">
+        <img src="${cupcake.image}" width="200" class="img-thumbnail rounded float-end">
+      </div>
+
+      <div class="col-6">
+            <h2>Flavor: ${cupcake.flavor}</h2>
+            <p>Size: ${cupcake.size}</p>
+            <p>Rating: ${cupcake.rating}</p>
+            <button id="c-${cupcake.id}" class="btn btn-danger">
             X
-        </button>
-    </div>`);
+            </button>
+      </div>
+
+    </div>`
+  );
 }
 
 $cupcakeForm.on("submit", handleSubmit);
@@ -60,7 +67,7 @@ $cupcakeList.on("click", ".btn-danger", deleteCupcake);
 /** delete cupcake from database and remove from html */
 async function deleteCupcake(evt) {
   evt.preventDefault;
-  const $cupcake = $(evt.target).closest("div");
+  const $cupcake = $(evt.target).closest(".row");
   const cupcakeId = $cupcake.attr("id");
   const [_, id] = cupcakeId.split("-");
   const response = await axios.delete(`${BASE_URL}/cupcakes/${id}`);
